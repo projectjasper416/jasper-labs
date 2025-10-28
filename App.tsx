@@ -50,7 +50,7 @@ const App: React.FC = () => {
             <div className="inline-block bg-gradient-to-r from-cyan-500 to-purple-600 p-1 rounded-full shadow-lg shadow-purple-500/20">
               <div className="bg-slate-900 rounded-full px-8 py-4">
                 <h2 className="text-3xl md:text-4xl font-bold tracking-wider uppercase">
-                  Launching Soon
+                  Launching Soon in 1 Month
                 </h2>
               </div>
             </div>
