@@ -37,7 +37,7 @@ const App: React.FC = () => {
             style={{ transitionDelay: '400ms' }}
           >
             <p className="text-xl md:text-2xl lg:text-3xl text-slate-300">
-              We are an AI-forward company building the next generation of intelligent products.
+              We are an AI forward company building the next generation of intelligent products.
             </p>
           </div>
           
