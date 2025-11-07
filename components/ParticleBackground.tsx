@@ -22,21 +22,23 @@ const ParticleBackground: React.FC = () => {
 
     const createParticles = () => {
       particles = [];
-      const particleCount = Math.floor((canvas.width * canvas.height) / 15000);
+      // Reduced density for subtlety (increased divisor from 15000 to 20000)
+      const particleCount = Math.floor((canvas.width * canvas.height) / 20000);
       for (let i = 0; i < particleCount; i++) {
         particles.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          radius: Math.random() * 1.5 + 0.5,
-          vx: (Math.random() - 0.5) * 0.5,
-          vy: (Math.random() - 0.5) * 0.5,
-          color: `rgba(100, 180, 255, ${Math.random() * 0.5 + 0.3})`
+          radius: Math.random() * 1.2 + 0.4,
+          vx: (Math.random() - 0.5) * 0.3,
+          vy: (Math.random() - 0.5) * 0.3,
+          // Lighter blue tones for white background
+          color: `rgba(59, 130, 246, ${Math.random() * 0.2 + 0.15})`
         });
       }
     };
 
     const connectParticles = () => {
-      const maxDistance = 120;
+      const maxDistance = 100;
       for (let i = 0; i < particles.length; i++) {
         for (let j = i; j < particles.length; j++) {
           const dx = particles[i].x - particles[j].x;
@@ -45,7 +47,9 @@ const ParticleBackground: React.FC = () => {
 
           if (distance < maxDistance) {
             ctx.beginPath();
-            ctx.strokeStyle = `rgba(100, 180, 255, ${1 - distance / maxDistance})`;
+            // Lighter blue for white background
+            const opacity = (1 - distance / maxDistance) * 0.2;
+            ctx.strokeStyle = `rgba(59, 130, 246, ${opacity})`;
             ctx.lineWidth = 0.3;
             ctx.moveTo(particles[i].x, particles[i].y);
             ctx.lineTo(particles[j].x, particles[j].y);
