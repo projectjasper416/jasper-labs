@@ -44,7 +44,7 @@ const Navigation: React.FC<NavigationProps> = ({ currentSection, onNavigate }) =
           <button
             onClick={() => handleNavClick('home')}
             className="flex items-center focus:outline-none"
-            aria-label="JasperLabs Home"
+            aria-label="Jasper Labs Home"
           >
             <Logo />
           </button>

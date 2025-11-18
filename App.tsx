@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import emailjs from '@emailjs/browser';
 import ParticleBackground from './components/ParticleBackground';
 import Navigation from './components/Navigation';
 import Section from './components/Section';
@@ -9,6 +10,7 @@ const App: React.FC = () => {
   const [currentSection, setCurrentSection] = useState('home');
   const [isVisible, setIsVisible] = useState<{ [key: string]: boolean }>({});
   const sectionsRef = useRef<{ [key: string]: HTMLElement | null }>({});
+  const [formStatus, setFormStatus] = useState<{ type: 'idle' | 'loading' | 'success' | 'error'; message?: string }>({ type: 'idle' });
 
   useEffect(() => {
     // Set initial visibility for hero section
@@ -64,17 +66,60 @@ const App: React.FC = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormStatus({ type: 'loading' });
+    
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
     const name = formData.get('name') as string;
     const email = formData.get('email') as string;
     const inquiryType = formData.get('inquiryType') as string;
     const message = formData.get('message') as string;
-    
-    const mailtoLink = `mailto:contact@jasperlabs.ai?subject=${encodeURIComponent(`${inquiryType} Inquiry from ${name}`)}&body=${encodeURIComponent(message)}`;
-    window.location.href = mailtoLink;
+
+    // EmailJS configuration
+    // To set up EmailJS:
+    // 1. Sign up at https://www.emailjs.com/
+    // 2. Create an email service (Gmail)
+    // 3. Create an email template with variables: {{name}}, {{email}}, {{inquiryType}}, {{message}}
+    // 4. Get your Public Key, Service ID, and Template ID
+    // 5. Replace the values below or use environment variables
+    const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'YOUR_SERVICE_ID';
+    const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'YOUR_TEMPLATE_ID';
+    const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'YOUR_PUBLIC_KEY';
+
+    try {
+      await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        {
+          to_email: 'projectjasper416@gmail.com',
+          from_name: name,
+          from_email: email,
+          inquiry_type: inquiryType,
+          message: message,
+          reply_to: email,
+        },
+        EMAILJS_PUBLIC_KEY
+      );
+
+      setFormStatus({ 
+        type: 'success', 
+        message: 'Thank you! Your message has been sent successfully.' 
+      });
+      form.reset();
+      
+      // Reset status message after 5 seconds
+      setTimeout(() => {
+        setFormStatus({ type: 'idle' });
+      }, 5000);
+    } catch (error) {
+      console.error('EmailJS error:', error);
+      setFormStatus({ 
+        type: 'error', 
+        message: 'Sorry, there was an error sending your message. Please try again or contact us directly at projectjasper416@gmail.com' 
+      });
+    }
   };
 
   const labInitiatives = [
@@ -149,7 +194,7 @@ const App: React.FC = () => {
               </div>
               <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-extrabold tracking-tight">
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400">
-                  JasperLabs
+                  Jasper Labs
                 </span>
               </h1>
               <p className="text-xl sm:text-2xl md:text-3xl text-slate-600 font-light tracking-wide">
@@ -184,7 +229,7 @@ const App: React.FC = () => {
                 Where Research Meets Innovation
               </h2>
               <p className="text-xl md:text-2xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-                JasperLabs is where global research meets Indian talent — and where experiments become products.
+                Jasper Labs is where global research meets Indian talent — and where experiments become products.
               </p>
             </div>
 
@@ -241,7 +286,7 @@ const App: React.FC = () => {
                 What's in the Lab
               </h2>
               <p className="text-xl md:text-2xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-                Active experiments, ongoing initiatives, and the work happening right now at JasperLabs.
+                Active experiments, ongoing initiatives, and the work happening right now at Jasper Labs.
               </p>
             </div>
 
@@ -428,13 +473,38 @@ const App: React.FC = () => {
                   placeholder="Tell us about your inquiry..."
                 />
               </div>
+              {formStatus.type !== 'idle' && (
+                <div
+                  className={`p-4 rounded-lg ${
+                    formStatus.type === 'success'
+                      ? 'bg-green-50 border border-green-200 text-green-800'
+                      : formStatus.type === 'error'
+                      ? 'bg-red-50 border border-red-200 text-red-800'
+                      : 'bg-blue-50 border border-blue-200 text-blue-800'
+                  }`}
+                >
+                  {formStatus.type === 'loading' && (
+                    <div className="flex items-center gap-2">
+                      <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      <span>Sending your message...</span>
+                    </div>
+                  )}
+                  {(formStatus.type === 'success' || formStatus.type === 'error') && (
+                    <p>{formStatus.message}</p>
+                  )}
+                </div>
+              )}
               <div className="pt-2">
                 <button
                   type="submit"
-                  className="w-full sm:w-auto px-8 py-3 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-medium rounded-full transition-all duration-300 hover:scale-105 shadow-lg shadow-blue-500/30 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white"
+                  disabled={formStatus.type === 'loading'}
+                  className="w-full sm:w-auto px-8 py-3 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-medium rounded-full transition-all duration-300 hover:scale-105 shadow-lg shadow-blue-500/30 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white"
                   aria-label="Submit contact form"
                 >
-                  Send Message
+                  {formStatus.type === 'loading' ? 'Sending...' : 'Send Message'}
                 </button>
               </div>
             </form>
@@ -448,7 +518,7 @@ const App: React.FC = () => {
               <Logo />
               <div className="text-center md:text-right space-y-2">
                 <p className="text-slate-600 text-sm">
-                  &copy; {new Date().getFullYear()} JasperLabs. All rights reserved.
+                  &copy; {new Date().getFullYear()} Jasper Labs. All rights reserved.
                 </p>
                 <p className="text-slate-500 text-xs">
                   Building the future, one experiment at a time.
