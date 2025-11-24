@@ -10,10 +10,10 @@ const Logo: React.FC<LogoProps> = ({ className = '', variant = 'default' }) => {
   if (variant === 'icon') {
     return (
       <img
-      src={logo}
-      alt="JasperLabs"
-      className={className}
-    />
+        src={logo}
+        alt="JasperLabs"
+        className={className}
+      />
     );
   }
 

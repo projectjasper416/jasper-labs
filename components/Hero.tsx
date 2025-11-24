@@ -9,7 +9,15 @@ interface HeroProps {
 
 const Hero: React.FC<HeroProps> = ({ onExplore }) => {
     return (
-        <section id="home" className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 border-b-4 border-black bg-black text-white">
+        <section id="home" className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 border-b-4 border-black bg-black text-white overflow-hidden">
+            {/* Animated Grid Background */}
+            <div className="absolute inset-0 z-0 opacity-20"
+                style={{
+                    backgroundImage: `linear-gradient(#3b82f6 1px, transparent 1px), linear-gradient(90deg, #3b82f6 1px, transparent 1px)`,
+                    backgroundSize: '40px 40px',
+                    maskImage: 'radial-gradient(circle at center, black 40%, transparent 100%)'
+                }}
+            />
             {/* Logo positioned top-left */}
             <div className="absolute top-8 left-8 md:top-12 md:left-12 z-20">
                 <Logo className="text-white w-12 h-12 md:w-16 md:h-16" variant="icon" />
